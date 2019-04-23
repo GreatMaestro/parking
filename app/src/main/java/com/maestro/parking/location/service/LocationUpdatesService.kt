@@ -32,7 +32,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.maestro.parking.base.MainActivity
 import com.maestro.parking.R
-import com.maestro.parking.location.LocationUtils
+import com.maestro.parking.location.utils.LocationUtils
 import com.maestro.parking.parking.worker.CoordinatesHandleWorker
 
 class LocationUpdatesService : Service() {
@@ -137,7 +137,7 @@ class LocationUpdatesService : Service() {
   }
 
   override fun onUnbind(intent: Intent): Boolean {
-    if (!changingConfiguration && LocationUtils.requestingLocationUpdates(this)) {
+    if (!changingConfiguration) {
       startForeground(NOTIFICATION_ID, notification)
     }
     return true
@@ -148,14 +148,12 @@ class LocationUpdatesService : Service() {
   }
 
   fun requestLocationUpdates() {
-    LocationUtils.setRequestingLocationUpdates(this, true)
     startService(Intent(applicationContext, LocationUpdatesService::class.java))
     try {
       fusedLocationClient.requestLocationUpdates(
         locationRequest, locationCallback, Looper.myLooper()
       )
     } catch (unlikely: SecurityException) {
-      LocationUtils.setRequestingLocationUpdates(this, false)
       Log.e(TAG, "Lost location permission. Could not request updates. $unlikely")
     }
 
@@ -164,10 +162,8 @@ class LocationUpdatesService : Service() {
   fun removeLocationUpdates() {
     try {
       fusedLocationClient.removeLocationUpdates(locationCallback)
-      LocationUtils.setRequestingLocationUpdates(this, false)
       stopSelf()
     } catch (unlikely: SecurityException) {
-      LocationUtils.setRequestingLocationUpdates(this, true)
       Log.e(TAG, "Lost location permission. Could not remove updates. $unlikely")
     }
 

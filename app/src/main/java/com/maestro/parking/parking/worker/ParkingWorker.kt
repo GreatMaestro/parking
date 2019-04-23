@@ -21,7 +21,7 @@ import org.threeten.bp.Instant
 import su.rusfearuth.arch.kdroidredux.rx.store.Store
 import java.util.concurrent.TimeUnit
 
-const val MINUTES_BEFORE_START_PARKING = 1L
+const val MINUTES_BEFORE_START_PARKING = 3L
 
 class ParkingWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
   override fun doWork(): Result {

@@ -3,22 +3,18 @@ package com.maestro.parking.base
 import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maestro.parking.BuildConfig
 import com.maestro.parking.R
-import com.maestro.parking.location.LocationUtils
 import com.maestro.parking.core.redux.MainState
 import com.maestro.parking.location.service.LocationUpdatesService
 import io.reactivex.disposables.Disposable
@@ -27,20 +23,18 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import su.rusfearuth.arch.kdroidredux.rx.store.Store
 
-class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : AppCompatActivity() {
 
   lateinit var storeDisposable: Disposable
   private val store: Store<MainState> by inject { parametersOf(this) }
   private var state = store.state.location.makeCopy()
 
-  private val onNavigateListener = BottomNavigationView.OnNavigationItemSelectedListener {item ->
+  private val onNavigateListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
     when (item.itemId) {
       R.id.navigation_parkings -> {
-        message.setText(R.string.title_parkings)
         return@OnNavigationItemSelectedListener true
       }
       R.id.navigation_map      -> {
-        message.setText(R.string.title_map)
         return@OnNavigationItemSelectedListener true
       }
     }
@@ -49,7 +43,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
   private val TAG = MainActivity::class.java.simpleName
   private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
-  private lateinit var receiver: Receiver
   private var service: LocationUpdatesService? = null
   private var bound = false
   private val serviceConnection = object : ServiceConnection {
@@ -57,6 +50,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
       val binder = service as LocationUpdatesService.LocalBinder
       this@MainActivity.service = binder.service
+      binder.service.requestLocationUpdates()
       bound = true
     }
 
@@ -68,40 +62,28 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    receiver = Receiver()
     setContentView(R.layout.activity_main)
     navigation.setOnNavigationItemSelectedListener(onNavigateListener)
     navigation.selectedItemId = R.id.navigation_parkings
 
-    // Check that the user hasn't revoked permissions by going to Settings.
-    if (LocationUtils.requestingLocationUpdates(this)) {
-      if (!checkPermissions()) {
-        requestPermissions()
-      }
+    if (!checkPermissions()) {
+      requestPermissions()
     }
   }
 
   override fun onStart() {
     super.onStart()
-    PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this)
-
-    mRequestLocationUpdatesButton.setOnClickListener {
-      if (!checkPermissions()) {
-        requestPermissions()
-      } else {
-        service?.requestLocationUpdates()
-      }
-    }
-
-    mRemoveLocationUpdatesButton.setOnClickListener {
-      service?.removeLocationUpdates()
-    }
-
-    setButtonsState(LocationUtils.requestingLocationUpdates(this))
 
     bindService(
       Intent(this, LocationUpdatesService::class.java), serviceConnection, Context.BIND_AUTO_CREATE
     )
+
+    // Check that the user hasn't revoked permissions by going to Settings.
+    if (!checkPermissions()) {
+      requestPermissions()
+    } else {
+      service?.requestLocationUpdates()
+    }
   }
 
   override fun onResume() {
@@ -111,18 +93,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         return@subscribe
       }
       state = it.location.makeCopy()
-      runOnUiThread {
-        message.text = "${state.lat}, ${state.lon}"
-      }
     }
-    LocalBroadcastManager.getInstance(this).registerReceiver(
-      receiver, IntentFilter(LocationUpdatesService.ACTION_BROADCAST)
-    )
-  }
-
-  override fun onPause() {
-    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-    super.onPause()
   }
 
   override fun onStop() {
@@ -130,7 +101,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
       unbindService(serviceConnection)
       bound = false
     }
-    PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)
     super.onStop()
   }
 
@@ -149,7 +119,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     )
 
     if (shouldProvideRationale) {
-      Log.i(TAG, "Displaying permission rationale to provide additional context.")
       Snackbar.make(root, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE
       ).setAction(R.string.ok) {
         ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_PERMISSIONS_REQUEST_CODE)
@@ -171,7 +140,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
       } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         service?.requestLocationUpdates()
       } else {
-        setButtonsState(false)
         Snackbar.make(root, R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
         ).setAction(R.string.settings) {
           val intent = Intent()
@@ -185,38 +153,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
   }
 
-  /**
-   * Receiver for broadcasts sent by [LocationUpdatesService].
-   */
-  private inner class Receiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-      val location = intent.getParcelableExtra<Location>(LocationUpdatesService.EXTRA_LOCATION)
-      if (location != null) {
-        Toast.makeText(
-          this@MainActivity, LocationUtils.getLocationText(location), Toast.LENGTH_SHORT
-        ).show()
-      }
-    }
-  }
-
-  override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
-    // Update the buttons state depending on whether location updates are being requested.
-    if (s == LocationUtils.KEY_REQUESTING_LOCATION_UPDATES) {
-      setButtonsState(
-        sharedPreferences.getBoolean(
-          LocationUtils.KEY_REQUESTING_LOCATION_UPDATES, false
-        )
-      )
-    }
-  }
-
-  private fun setButtonsState(requestingLocationUpdates: Boolean) {
-    if (requestingLocationUpdates) {
-      mRequestLocationUpdatesButton.setEnabled(false)
-      mRemoveLocationUpdatesButton.setEnabled(true)
-    } else {
-      mRequestLocationUpdatesButton.setEnabled(true)
-      mRemoveLocationUpdatesButton.setEnabled(false)
-    }
+  private fun changeFragment(fragment: Fragment) {
+    supportFragmentManager.beginTransaction()
+                          .replace(R.id.container, fragment)
+                          .commitAllowingStateLoss()
   }
 }

@@ -1,4 +1,4 @@
-package com.maestro.parking.splash
+package com.maestro.parking.base.splash
 
 import android.content.Intent
 import android.os.Bundle
