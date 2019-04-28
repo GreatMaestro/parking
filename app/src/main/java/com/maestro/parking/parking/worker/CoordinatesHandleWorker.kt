@@ -20,7 +20,7 @@ class CoordinatesHandleWorker(context: Context, workerParams: WorkerParameters) 
     val longitude = inputData.getDouble(LOCATION_LONG, 0.0)
     val time = inputData.getLong(LOCATION_TIME, 0L)
 
-    Log.e("CoordinatesHandleWorker", "Job done: $latitude, $longitude")
+    Log.d("CoordinatesHandleWorker", "Job done: $latitude, $longitude")
 
     val store = GlobalContext.get().koin.get<Store<MainState>> { parametersOf() }
     store.dispatch(UpdateLocationAction(lat = latitude, lon = longitude, time = time))

@@ -7,13 +7,11 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.maestro.parking.base.redux.MainState
-import com.maestro.parking.parking.data.BoundaryPoint
 import com.maestro.parking.parking.data.CurrentParkingInfo
-import com.maestro.parking.parking.data.polygon.Point
-import com.maestro.parking.parking.data.toPolygon
 import com.maestro.parking.parking.redux.UpdateCurrentParkingInfoAction
 import com.maestro.parking.parking.redux.UpdateEndParkingTimeAction
 import com.maestro.parking.parking.redux.UpdateStartParkingTimeAction
+import com.maestro.parking.parking.utils.isInPolygon
 import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf
 import org.threeten.bp.Duration
@@ -48,7 +46,7 @@ class ParkingWorker(context: Context, workerParams: WorkerParameters) : Worker(c
           store.dispatch(UpdateEndParkingTimeAction(endParkingTime))
           val parkingTime = TimeUnit.MILLISECONDS.toSeconds(endParkingTime - currentParkingInfo.startParkingTime)
           //TODO: Save to database here
-          Log.e("Total parking time", "$parkingTime s")
+          Log.d("Total parking time", "$parkingTime s")
         }
         store.dispatch(UpdateCurrentParkingInfoAction(null))
       }
@@ -76,11 +74,5 @@ class ParkingWorker(context: Context, workerParams: WorkerParameters) : Worker(c
     WorkManager
       .getInstance()
       .enqueue(parkingWork)
-  }
-
-  private fun isInPolygon(lat: Double, lon: Double, boundaryPoints: List<BoundaryPoint>): Boolean {
-    val polygon = boundaryPoints.toPolygon()
-    val point = Point(lat, lon)
-    return polygon.contains(point)
   }
 }

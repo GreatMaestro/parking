@@ -1,9 +1,11 @@
 package com.maestro.parking.parking.utils
 
 import android.location.Location
+import com.maestro.parking.parking.data.BoundaryPoint
 import com.maestro.parking.parking.data.polygon.Point
 import com.maestro.parking.parking.data.polygon.Line
 import com.maestro.parking.parking.data.polygon.Polygon
+import com.maestro.parking.parking.data.toPolygon
 
 private fun distance(start: Point,
                      end: Point): Double {
@@ -50,4 +52,10 @@ fun distance(point: Point,
                                                           edge)
              }
              .reduce(::minOf)
+}
+
+fun isInPolygon(lat: Double, lon: Double, boundaryPoints: List<BoundaryPoint>): Boolean {
+  val polygon = boundaryPoints.toPolygon()
+  val point = Point(lat, lon)
+  return polygon.contains(point)
 }
