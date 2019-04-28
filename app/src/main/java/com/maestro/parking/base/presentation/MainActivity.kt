@@ -1,35 +1,29 @@
 package com.maestro.parking.base.presentation
 
 import android.Manifest
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maestro.parking.BuildConfig
 import com.maestro.parking.R
-import com.maestro.parking.base.redux.MainState
 import com.maestro.parking.location.presentation.MapFragment
 import com.maestro.parking.location.service.LocationUpdatesService
 import com.maestro.parking.parking.presentation.ParkingsFragment
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
-import su.rusfearuth.arch.kdroidredux.rx.store.Store
 
 class MainActivity : AppCompatActivity() {
-
-  lateinit var storeDisposable: Disposable
-  private val store: Store<MainState> by inject { parametersOf(this) }
-  private var state = store.state.location.copy()
 
   private val onNavigateListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
     when (item.itemId) {
@@ -88,21 +82,6 @@ class MainActivity : AppCompatActivity() {
     } else {
       service?.requestLocationUpdates()
     }
-  }
-
-  override fun onResume() {
-    super.onResume()
-    storeDisposable = store.subscribe {
-      if (state == it.location) {
-        return@subscribe
-      }
-      state = it.location.copy()
-    }
-  }
-
-  override fun onPause() {
-    storeDisposable.dispose()
-    super.onPause()
   }
 
   override fun onStop() {
