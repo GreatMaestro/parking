@@ -6,11 +6,11 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.maestro.parking.core.redux.MainState
+import com.maestro.parking.base.redux.MainState
 import com.maestro.parking.parking.data.BoundaryPoint
 import com.maestro.parking.parking.data.CurrentParkingInfo
 import com.maestro.parking.parking.data.polygon.Point
-import com.maestro.parking.parking.data.polygon.Polygon
+import com.maestro.parking.parking.data.toPolygon
 import com.maestro.parking.parking.redux.UpdateCurrentParkingInfoAction
 import com.maestro.parking.parking.redux.UpdateEndParkingTimeAction
 import com.maestro.parking.parking.redux.UpdateStartParkingTimeAction
@@ -79,11 +79,7 @@ class ParkingWorker(context: Context, workerParams: WorkerParameters) : Worker(c
   }
 
   private fun isInPolygon(lat: Double, lon: Double, boundaryPoints: List<BoundaryPoint>): Boolean {
-    val polygonBuilder = Polygon.Builder()
-    for (boundaryPoint in boundaryPoints) {
-      polygonBuilder.addVertex(Point(boundaryPoint.lat, boundaryPoint.lon))
-    }
-    val polygon = polygonBuilder.build()
+    val polygon = boundaryPoints.toPolygon()
     val point = Point(lat, lon)
     return polygon.contains(point)
   }

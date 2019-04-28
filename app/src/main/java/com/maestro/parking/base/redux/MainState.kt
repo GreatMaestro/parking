@@ -1,4 +1,4 @@
-package com.maestro.parking.core.redux
+package com.maestro.parking.base.redux
 
 import com.maestro.parking.location.redux.LocationState
 import com.maestro.parking.parking.redux.ParkingsState

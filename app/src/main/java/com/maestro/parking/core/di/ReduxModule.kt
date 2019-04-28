@@ -1,6 +1,6 @@
 package com.maestro.parking.core.di
 
-import com.maestro.parking.core.redux.MainState
+import com.maestro.parking.base.redux.MainState
 import com.maestro.parking.location.redux.locationReducer
 import com.maestro.parking.parking.redux.parkingsReducer
 import org.koin.dsl.module

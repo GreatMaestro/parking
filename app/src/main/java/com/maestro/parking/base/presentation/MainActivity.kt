@@ -1,4 +1,4 @@
-package com.maestro.parking.base
+package com.maestro.parking.base.presentation
 
 import android.Manifest
 import android.content.*
@@ -15,8 +15,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.maestro.parking.BuildConfig
 import com.maestro.parking.R
-import com.maestro.parking.core.redux.MainState
+import com.maestro.parking.base.redux.MainState
+import com.maestro.parking.location.presentation.MapFragment
 import com.maestro.parking.location.service.LocationUpdatesService
+import com.maestro.parking.parking.presentation.ParkingsFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
@@ -27,14 +29,16 @@ class MainActivity : AppCompatActivity() {
 
   lateinit var storeDisposable: Disposable
   private val store: Store<MainState> by inject { parametersOf(this) }
-  private var state = store.state.location.makeCopy()
+  private var state = store.state.location.copy()
 
   private val onNavigateListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
     when (item.itemId) {
       R.id.navigation_parkings -> {
+        changeFragment(ParkingsFragment())
         return@OnNavigationItemSelectedListener true
       }
       R.id.navigation_map      -> {
+        changeFragment(MapFragment())
         return@OnNavigationItemSelectedListener true
       }
     }
@@ -92,8 +96,13 @@ class MainActivity : AppCompatActivity() {
       if (state == it.location) {
         return@subscribe
       }
-      state = it.location.makeCopy()
+      state = it.location.copy()
     }
+  }
+
+  override fun onPause() {
+    storeDisposable.dispose()
+    super.onPause()
   }
 
   override fun onStop() {

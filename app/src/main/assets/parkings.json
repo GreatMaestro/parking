@@ -1,48 +1,52 @@
-[  
-   {  
-      "name":"Gate of Tartarus",
-      "boundaryPoints":[  
-         {  
-            "lat":42.827591,
-            "lon":74.597547
-         },
-         {  
-            "lat":42.826458,
-            "lon":74.610679
-         },
-         {  
-            "lat":42.835773,
-            "lon":74.625871
-         },
-         {  
-            "lat":42.850626,
-            "lon":74.615056
-         },
-         {  
-            "lat":42.849745,
-            "lon":74.594113
-         }
-      ]
-   },
-   {  
-      "name":"Center parking",
-      "boundaryPoints":[  
-         {  
-            "lat":42.877804,
-            "lon":74.615221
-         },
-         {  
-            "lat":42.877835,
-            "lon":74.619856
-         },
-         {  
-            "lat":42.881436,
-            "lon":74.619577
-         },
-         {  
-            "lat":42.881263,
-            "lon":74.616508
-         }
-      ]
-   }
+[
+  {
+    "name": "Gate of Tartarus",
+    "boundaryPoints": [
+      {
+        "lat": 42.827591,
+        "lon": 74.597547
+      },
+      {
+        "lat": 42.826458,
+        "lon": 74.610679
+      },
+      {
+        "lat": 42.835773,
+        "lon": 74.625871
+      },
+      {
+        "lat": 42.850626,
+        "lon": 74.615056
+      },
+      {
+        "lat": 42.849745,
+        "lon": 74.594113
+      }
+    ],
+    "imageUrl": "https://i.imgur.com/KSzwEWY.jpg",
+    "description": "Welcome to Hell!"
+  },
+  {
+    "name": "Center parking",
+    "boundaryPoints": [
+      {
+        "lat": 42.877804,
+        "lon": 74.615221
+      },
+      {
+        "lat": 42.877835,
+        "lon": 74.619856
+      },
+      {
+        "lat": 42.881436,
+        "lon": 74.619577
+      },
+      {
+        "lat": 42.881263,
+        "lon": 74.616508
+      }
+    ],
+    "imageUrl": "https://i.imgur.com/feAC71e.jpg",
+    "description": "The effect of large scale parking in-city has long been contentious. Elimination of historic structures in favor of garages or lots led to historical preservation movements in many cities. The acreage devoted to parking is widely seen as disrupting a walkable urban fabric, maximizing convenience to each individual building, but eliminating foot traffic among them. Large paved areas have been called \"parking craters\", \"parking deserts\", and similar terms, emphasizing their \"depopulated\" nature and the barriers they can create to walking movement. Due to a recent trend towards more livable and walkable communities, parking minimums (policies requiring each building to have at least a minimum number of parking spaces) have been criticized by both livable streets advocates and developers alike."
+  }
 ]

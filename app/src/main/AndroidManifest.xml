@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".base.MainActivity" />
+        <activity android:name=".base.presentation.MainActivity" />
 
         <service
             android:name=".location.service.LocationUpdatesService"

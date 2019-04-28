@@ -6,7 +6,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.maestro.parking.core.redux.MainState
+import com.maestro.parking.base.redux.MainState
 import com.maestro.parking.location.redux.UpdateLocationAction
 import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf

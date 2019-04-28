@@ -1,6 +1,6 @@
 package com.maestro.parking.parking.redux
 
-import com.maestro.parking.core.redux.MainState
+import com.maestro.parking.base.redux.MainState
 import su.rusfearuth.arch.kdroidredux.core.reducer.Reducer
 
 val parkingsReducer: Reducer<MainState> = {state, action ->

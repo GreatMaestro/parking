@@ -30,7 +30,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.maestro.parking.base.MainActivity
+import com.maestro.parking.base.presentation.MainActivity
 import com.maestro.parking.R
 import com.maestro.parking.location.utils.LocationUtils
 import com.maestro.parking.parking.worker.CoordinatesHandleWorker
@@ -63,7 +63,7 @@ class LocationUpdatesService : Service() {
         this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
       )
       val activityPendingIntent = PendingIntent.getActivity(
-        this, 0, Intent(this, MainActivity::class.java), 0
+          this, 0, Intent(this, MainActivity::class.java), 0
       )
 
       val builder = NotificationCompat.Builder(this).addAction(
