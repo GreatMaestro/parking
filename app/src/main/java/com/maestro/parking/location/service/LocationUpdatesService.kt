@@ -200,7 +200,7 @@ class LocationUpdatesService : Service() {
   private fun broadcastLocation(location: Location) {
     val inputData = Data.Builder()
                         .putDouble(CoordinatesHandleWorker.LOCATION_LAT, location.latitude)
-                        .putDouble(CoordinatesHandleWorker.LOCATION_LONG, location.longitude)
+                        .putDouble(CoordinatesHandleWorker.LOCATION_LON, location.longitude)
                         .putLong(CoordinatesHandleWorker.LOCATION_TIME, location.time).build()
     val coordinatesHandleWork = OneTimeWorkRequest
       .Builder(CoordinatesHandleWorker::class.java)

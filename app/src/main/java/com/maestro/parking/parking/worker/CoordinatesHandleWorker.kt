@@ -17,7 +17,7 @@ class CoordinatesHandleWorker(context: Context, workerParams: WorkerParameters) 
   override fun doWork(): Result {
     //get Data out from input
     val latitude = inputData.getDouble(LOCATION_LAT, 0.0)
-    val longitude = inputData.getDouble(LOCATION_LONG, 0.0)
+    val longitude = inputData.getDouble(LOCATION_LON, 0.0)
     val time = inputData.getLong(LOCATION_TIME, 0L)
 
     Log.d("CoordinatesHandleWorker", "Job done: $latitude, $longitude")
@@ -36,8 +36,8 @@ class CoordinatesHandleWorker(context: Context, workerParams: WorkerParameters) 
   }
 
   companion object {
-    const val LOCATION_LONG = "LOCATION_LONG"
     const val LOCATION_LAT = "LOCATION_LAT"
+    const val LOCATION_LON = "LOCATION_LON"
     const val LOCATION_TIME = "LOCATION_TIME"
   }
 }

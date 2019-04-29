@@ -5,18 +5,19 @@ import java.util.ArrayList
 /**
  * The 2D polygon.
  */
-class Polygon private constructor(val sides: List<Line>, private val _boundingBox: BoundingBox) {
+class Polygon private constructor(val sides: List<Line>,
+                                  private val boundingBox: BoundingBox) {
 
   /**
    * Builder of the polygon
    */
   class Builder {
-    private var _vertexes: MutableList<Point> = ArrayList()
-    private val _sides = ArrayList<Line>()
-    private var _boundingBox: BoundingBox? = null
+    private var vertexes: MutableList<Point> = ArrayList()
+    private val sides = ArrayList<Line>()
+    private var boundingBox: BoundingBox? = null
 
-    private var _firstPoint = true
-    private var _isClosed = false
+    private var isFirstPoint = true
+    private var isClosed = false
 
     /**
      * Add vertex points of the polygon.<br></br>
@@ -26,19 +27,19 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
      * @return The builder
      */
     fun addVertex(point: Point): Builder {
-      if (_isClosed) {
+      if (isClosed) {
         // each hole we start with the new array of vertex points
-        _vertexes = ArrayList()
-        _isClosed = false
+        vertexes = ArrayList()
+        isClosed = false
       }
 
       updateBoundingBox(point)
-      _vertexes.add(point)
+      vertexes.add(point)
 
       // add line (edge) to the polygon
-      if (_vertexes.size > 1) {
-        val line = Line(_vertexes[_vertexes.size - 2], point)
-        _sides.add(line)
+      if (vertexes.size > 1) {
+        val line = Line(vertexes[vertexes.size - 2], point)
+        sides.add(line)
       }
 
       return this
@@ -53,8 +54,8 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
       validate()
 
       // add last Line
-      _sides.add(Line(_vertexes[_vertexes.size - 1], _vertexes[0]))
-      _isClosed = true
+      sides.add(Line(vertexes[vertexes.size - 1], vertexes[0]))
+      isClosed = true
 
       return this
     }
@@ -68,12 +69,12 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
       validate()
 
       // in case you forgot to close
-      if (!_isClosed) {
+      if (!isClosed) {
         // add last Line
-        _sides.add(Line(_vertexes[_vertexes.size - 1], _vertexes[0]))
+        sides.add(Line(vertexes[vertexes.size - 1], vertexes[0]))
       }
 
-      return Polygon(_sides, _boundingBox!!)
+      return Polygon(sides, boundingBox!!)
     }
 
     /**
@@ -82,17 +83,17 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
      * @param point New point
      */
     private fun updateBoundingBox(point: Point) {
-      if (_firstPoint) {
-        _boundingBox = BoundingBox().apply {
+      if (isFirstPoint) {
+        boundingBox = BoundingBox().apply {
           xMax = point.x
           xMin = point.x
           yMax = point.y
           yMin = point.y
         }
 
-        _firstPoint = false
+        isFirstPoint = false
       } else {
-        _boundingBox!!.apply {
+        boundingBox!!.apply {
           if (point.x > xMax) {
             xMax = point.x
           } else if (point.x < xMin) {
@@ -108,7 +109,7 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
     }
 
     private fun validate() {
-      if (_vertexes.size < 3) {
+      if (vertexes.size < 3) {
         throw RuntimeException("Polygon must have at least 3 points")
       }
     }
@@ -184,8 +185,8 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
    */
   private fun createRay(point: Point): Line {
     // create outside point
-    val epsilon = (_boundingBox.xMax - _boundingBox.xMin) / 10e6
-    val outsidePoint = Point(_boundingBox.xMin - epsilon, _boundingBox.yMin)
+    val epsilon = (boundingBox.xMax - boundingBox.xMin) / 10e6
+    val outsidePoint = Point(boundingBox.xMin - epsilon, boundingBox.yMin)
 
     return Line(outsidePoint, point)
   }
@@ -197,7 +198,7 @@ class Polygon private constructor(val sides: List<Line>, private val _boundingBo
    * @return `True` if the point in bounding box, otherwise return `False`
    */
   private fun inBoundingBox(point: Point): Boolean {
-    with(_boundingBox) {
+    with(boundingBox) {
       return point.x in xMin..xMax && point.y in yMin..yMax
     }
   }

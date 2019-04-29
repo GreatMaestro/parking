@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val parkingModule = module {
   scope(named<ParkingsFragment>()) {
     scoped {
-        (view: ParkingsView) -> ParkingsPresenter(view, get())
+      (view: ParkingsView) -> ParkingsPresenter(view, get())
     }
   }
 }

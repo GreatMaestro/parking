@@ -1,12 +1,11 @@
 package com.maestro.parking.base
 
 import android.app.Application
-import com.maestro.parking.core.di.reduxModule
 import com.maestro.parking.base.redux.MainState
-import com.maestro.parking.parking.redux.UpdateParkingsAction
+import com.maestro.parking.core.di.reduxModule
 import com.maestro.parking.core.utils.loadParkings
 import com.maestro.parking.parking.di.parkingModule
-import org.koin.android.ext.koin.androidContext
+import com.maestro.parking.parking.redux.UpdateParkingsAction
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
@@ -19,7 +18,6 @@ class App : Application() {
 
     startKoin {
       androidLogger()
-      androidContext(this@App)
       modules(reduxModule, parkingModule)
     }
     val parkings = loadParkings(this)
